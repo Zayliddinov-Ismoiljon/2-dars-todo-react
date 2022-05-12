@@ -1,65 +1,80 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import './App.css';
 
 import TodoItem from './Component/TodoItem';
 
 function App() {
+	const [todos, setTodos] = useState(
+		JSON.parse(window.localStorage.getItem('todos')) || [],
+	);
 
-  const [todos, setTodos]=useState([
-    {id:1, title:"kod yozmadim",isComplated: false,},
-    {id:2, title:"kod yozdim",isComplated: false,},
-    {id:3, title:"kitob o'qidim",isComplated: false,}
-  ])
+	// console.log(todos);
 
-  const [value, setValue]=useState("nimadir");
+	const hendlInput = (evt) => {
+		const newTodo = {
+			id: todos[todos.length - 1]?.id + 1 || 0,
+			title: evt.target.value,
+			isComplated: false,
+		};
 
-  // console.log(todos);
+		if (evt.code === 'Enter') {
+			evt.target.value = null;
+			window.localStorage.setItem('todos', JSON.stringify([...todos, newTodo]));
+			setTodos([...todos, newTodo]);
+		}
+	};
 
-  const hendlInput=(evt)=>{
+	const handlDeleteTodo = (evt) => {
+		const deletedTodoId = evt.target.dataset.todoId - 0;
 
-    const newTodo={
-      id:todos[todos.length-1]?.id + 1 || 0,
-      title:evt.target.value,
-      isComplated:false,
-    }
+		const filteredTodos = todos.filter((item) => item.id !== deletedTodoId);
+		window.localStorage.setItem('todos', JSON.stringify(filteredTodos));
 
-    
+		setTodos(filteredTodos);
+	};
 
-    if(evt.code==="Enter"){
-      setTodos([...todos, newTodo])
-    }
-  }
+	const handlComplated = (evt) => {
+		const complatedId = evt.target.dataset.todoId - 0;
 
-  const changeValue=(evt)=>{
-    return setValue(evt.target.value)
-  }
+		const findedItem = todos.find((item) => item.id === complatedId);
 
-  const handlDeleteTodo=(evt)=>{
-    const deletedTodoId = (evt.target.dataset.todoId)-0;
+		findedItem.isComplated = !findedItem.isComplated;
 
-    const filteredTodos=todos.filter(item=>item.id !== deletedTodoId);
+		window.localStorage.setItem('todos', JSON.stringify(todos));
 
-    console.log(filteredTodos);
+		// console.log(todos);
 
-    setTodos(filteredTodos)
-  }
+		setTodos([...todos]);
+	};
 
-  return (
-    <>
-      <div className='todo'>
-      <input className='input' onKeyUp={hendlInput} type={"text"} placeholder="todo..."/>
+	return (
+		<>
+			<div className='todo'>
+				<input
+					className='input'
+					onKeyUp={hendlInput}
+					type={'text'}
+					placeholder='todo...'
+				/>
 
-      <ul className='list'>
-        {
-          todos.map(item=>(
-            <TodoItem handlDeleteTodo={handlDeleteTodo} key={item.id} props={item}/>
-          ))
-        }
-      </ul>
-      </div>
+				<ul className='list'>
+					{todos.map((item) => (
+						<TodoItem
+							isComplated={item.isComplated}
+							handlComplated={handlComplated}
+							handlDeleteTodo={handlDeleteTodo}
+							key={item.id}
+							props={item}
+						/>
+					))}
+				</ul>
+			</div>
+		</>
+	);
 
-    </>
-  );
 }
+
+
+
 
 export default App;

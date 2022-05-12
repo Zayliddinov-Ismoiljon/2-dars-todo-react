@@ -2,8 +2,6 @@
     margin-bottom: 10px;
 }
 
-
-
 .btn{
     width: 50px;
     padding: 5px;
@@ -11,4 +9,8 @@
     margin-left: 10px;
     background-color: yellow;
     font-weight: 700;
+}
+
+.completed{
+    text-decoration: line-through;
 }
